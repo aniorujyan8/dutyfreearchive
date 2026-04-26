@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duty-Free - Archive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      cursor: none !important;
+    }
+
+    body {
+      background-color: #ffffff;
+      font-family: Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      cursor: none;
+    }
+
+    #cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, white 0%, white 40%, rgba(255, 255, 255, 0.4) 60%, transparent 80%);
+      mix-blend-mode: difference;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 99999;
+    }
+
+    header {
+      width: 100%;
+      height: 40px;
+      background-color: #ffffff;
+      border-bottom: 0.5px solid #000;
+      display: flex;
+      align-items: stretch;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10001;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-right: 0.5px solid #000;
+      cursor: none !important;
+      transition: background-color 0.2s ease;
+    }
+
+    .header-left:hover {
+      background-color: #f2bda0;
+    }
+
+    .hamburger {
+      width: 18px;
+      height: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 0.5px;
+      background-color: #000;
+    }
+
+    .header-center {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo {
+      height: 36px;
+    }
+
+    #side-panel, #sub-panel {
+      position: fixed;
+      top: 40px;
+      left: -224px;
+      width: 224px;
+      height: 100vh;
+      background-color: #ffffff;
+      border-right: 0.5px solid #000;
+      z-index: 10000;
+      transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    #side-panel.open { left: 0; }
+    #sub-panel.open { left: 224px; }
+
+    /* Custom scrollbar */
+    #side-panel::-webkit-scrollbar,
+    #sub-panel::-webkit-scrollbar,
+    .country-dropdown-menu::-webkit-scrollbar,
+    .color-dropdown-menu::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    #side-panel::-webkit-scrollbar-track,
+    #sub-panel::-webkit-scrollbar-track,
+    .country-dropdown-menu::-webkit-scrollbar-track,
+    .color-dropdown-menu::-webkit-scrollbar-track {
+      background: #ffffff;
+      border-left: 0.5px solid #000;
+    }
+
+    #side-panel::-webkit-scrollbar-thumb,
+    #sub-panel::-webkit-scrollbar-thumb,
+    .country-dropdown-menu::-webkit-scrollbar-thumb,
+    .color-dropdown-menu::-webkit-scrollbar-thumb {
+      background: #f2bda0;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 40px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 40px);
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    #overlay.visible { opacity: 1; pointer-events: auto; }
+
+    nav {
+      width: 100%;
+      height: 30px;
+      background-color: #ffffff;
+      border-top: 0.5px solid #000;
+      display: flex;
+      align-items: stretch;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 10001;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: stretch;
+      border-right: 0.5px solid #000;
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .nav-left a,
+    .nav-right a {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      text-decoration: none;
+      color: #000;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background-color 0.2s ease;
+    }
+
+    .nav-right a {
+      border-left: 0.5px solid #000;
+    }
+
+    .nav-left a:hover,
+    .nav-right a:hover,
+    .nav-left a.active,
+    .nav-right a.active {
+      background-color: #f2bda0;
+    }
+
+    main {
+      padding: 0 0 200px 0; /* Removed top/side padding, handled by archive-header and grid container */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .archive-top-section {
+      width: 100%;
+      background-color: #ffffff;
+      padding-top: 100px;
+      margin-bottom: 80px;
+    }
+
+    .archive-sticky-section {
+      width: 100%;
+      background-color: #ffffff;
+      border-bottom: 0.5pt solid #000;
+      position: sticky;
+      top: 40px;
+      z-index: 999;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      margin-bottom: 60px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 40px;
+    }
+
+    .header-controls {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .header-right-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .archive-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 54px;
+      line-height: 1;
+      width: 25%;
+      flex-shrink: 0;
+    }
+
+    .archive-title-row {
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .archive-description {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      flex: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      margin-top: 14px; /* Aligns with the top of the 'e' in Archive */
+      color: #999;
+      text-align: justify;
+    }
+
+    .country-selector-wrap {
+      position: relative;
+    }
+
+    .country-btn {
+      padding: 0 16px;
+      height: 30px;
+      border: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Helvetica, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: #fff;
+      cursor: none !important;
+      transition: background-color 0.2s ease;
+    }
+
+    .country-dropdown-menu,
+    .color-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      width: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: #fff;
+      border: 0.5px solid #000;
+      z-index: 15000;
+      display: none;
+      padding: 15px;
+    }
+
+    .country-dropdown-menu.open,
+    .color-dropdown-menu.open {
+      display: block;
+    }
+
+    /* Color Wheel Layout */
+    .color-wheel {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 10px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0.5px solid #000;
+      border-radius: 50%;
+      background: #fcfcfc;
+    }
+
+    .color-dot {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 0.5px solid #000;
+      cursor: none !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .color-dot:hover {
+      transform: scale(1.15);
+    }
+
+    .color-dot.active {
+      box-shadow: 0 0 0 2px #fff, 0 0 0 3px #e8600a;
+    }
+
+    #color-all-btn {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: 0.5px solid #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-family: Helvetica, sans-serif;
+      text-transform: uppercase;
+      cursor: none !important;
+      z-index: 10;
+    }
+
+    .country-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .country-item {
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .country-item a {
+      color: #000;
+      text-decoration: underline;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s ease;
+      text-decoration-thickness: 0.5px;
+      text-underline-offset: 4px;
+      cursor: none !important;
+      display: block;
+    }
+
+    .country-item a:hover, .country-item a.active {
+      color: #e8600a;
+    }
+
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      max-width: 1200px;
+      border: 0.5px solid #000; /* Full container stroke */
+    }
+
+    .archive-item {
+      min-height: 320px;
+      border-right: 0.5px solid #000;
+      border-bottom: 0.5px solid #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      transition: background-color 0.2s ease;
+      position: relative;
+    }
+
+    .archive-item:nth-child(4n) {
+      border-right: none;
+    }
+
+    .archive-item:hover {
+      background-color: #f2bda0;
+    }
+
+    /* 3D Pack Styling */
+    .pack-wrapper {
+      perspective: 1000px;
+      width: 100px;
+      height: 160px;
+      margin-bottom: 20px;
+    }
+
+    .pack-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .archive-item:hover .pack-3d,
+    #modal-pack-3d {
+      animation: slow-spin 12s linear infinite;
+    }
+
+    .face {
+      position: absolute;
+      background: #ffffff;
+      border: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .face img { width: 100%; height: 100%; object-fit: cover; }
+    .face.front { width: 100px; height: 160px; transform: rotateY(0deg) translateZ(10px); }
+    .face.back { width: 100px; height: 160px; transform: rotateY(180deg) translateZ(10px); }
+    .face.left { width: 20px; height: 160px; transform: rotateY(-90deg) translateZ(50px); left: 40px; }
+    .face.right { width: 20px; height: 160px; transform: rotateY(90deg) translateZ(50px); left: 40px; }
+
+    @keyframes slow-spin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+
+    .archive-item-details {
+      text-align: center;
+    }
+
+    .archive-item-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 22px;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    .archive-item-country {
+      font-family: Helvetica, sans-serif;
+      font-size: 10px;
+      color: #999;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .archive-item-reviews {
+      font-family: Helvetica, sans-serif;
+      font-size: 9px;
+      color: #e8600a;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Detail Modal */
+    #archive-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 20000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    #archive-modal-box {
+      position: relative;
+      width: 90%;
+      max-width: 1000px;
+      height: 600px;
+      background: #ffffff;
+      border: 0.5px solid #000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      height: 24px;
+      border-bottom: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      background: #fff;
+    }
+
+    .modal-close-btn {
+      width: 24px;
+      height: 24px;
+      border-right: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Helvetica, sans-serif;
+      font-size: 10px;
+      cursor: none !important;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      color: #000;
+    }
+
+    .modal-close-btn:hover {
+      background-color: #f2bda0;
+      color: #000;
+    }
+
+    .modal-left, .modal-right {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .modal-left {
+      justify-content: center; /* Center image and dots vertically */
+      align-items: center;
+      border-right: 0.5px solid #000;
+      position: relative;
+    }
+    .modal-right {
+      justify-content: space-between;
+    }
+
+    /* Custom scrollbar for modal panels */
+    .modal-left::-webkit-scrollbar,
+    .modal-right::-webkit-scrollbar {
+      width: 10px;
+    }
+    .modal-left::-webkit-scrollbar-track,
+    .modal-right::-webkit-scrollbar-track {
+      background: #ffffff;
+      border-left: 0.5px solid #000;
+      border-right: 0.5px solid #000;
+    }
+    .modal-left::-webkit-scrollbar-thumb,
+    .modal-right::-webkit-scrollbar-thumb {
+      background: #f2bda0;
+    }
+    
+    .modal-metadata-item {
+      margin-bottom: 20px;
+    }
+
+    .metadata-label {
+      font-family: Helvetica, sans-serif;
+      font-size: 9px;
+      color: #aaa;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .metadata-value {
+      font-family: 'Instrument Serif', serif;
+      font-size: 20px;
+      color: #000;
+      text-transform: none;
+    }
+
+    .asset-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modal-static-img {
+      max-width: 180px;
+      max-height: 250px;
+      width: auto;
+      height: auto;
+      display: none;
+      object-fit: contain;
+    }
+
+    .modal-asset-controls {
+      width: 100%;
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      z-index: 20;
+    }
+    .asset-dot {
+      width: 8px;
+      height: 8px;
+      border: 0.5px solid #000;
+      border-radius: 50%;
+      background-color: #333;
+      transition: background-color 0.2s ease;
+      cursor: none !important;
+    }
+
+    .asset-dot.active {
+      background-color: #e8600a;
+    }
+
+    .thick-review-box {
+      border: 10pt solid #000;
+      padding: 20px 20px;
+      width: 100%;
+      min-height: 115px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .review-pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .review-dot {
+      width: 8px;
+      height: 8px;
+      border: 0.5px solid #000;
+      border-radius: 50%;
+      background-color: #333;
+      cursor: none !important;
+      transition: background-color 0.2s ease;
+    }
+
+    .review-dot.active {
+      background-color: #e8600a;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cursor"></div>
+  <header>
+    <div class="header-left" id="hamburger-btn">
+      <div class="hamburger"><span></span><span></span><span></span></div>
+    </div>
+    <div class="header-center">
+      <img src="Duty-Free logo .png" class="nav-logo" alt="Logo">
+    </div>
+    <div style="width: 50.5px;"></div>
+  </header>
+
+  <nav>
+    <div class="nav-left"><a href="index.html">Home</a></div>
+    <div class="nav-right">
+      <a href="map.html">Map</a>
+      <a href="archive.html" class="active">Archive</a>
+      <a href="publication.html">Publication</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="archive-top-section">
+      <div class="header-inner">
+        <div class="archive-title-row">
+          <h1 class="archive-title">Archive</h1>
+          <p class="archive-description">Duty-Free is an interactive archive and collection of an international cigarette packs. Browse the collection of the packs alongside our users reviews and insights. Find more info when clicking on the packs. Help us expand our library, leave reviews on the map and explore the previous users journey's.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="archive-sticky-section">
+      <div class="header-inner">
+        <div class="header-controls">
+          <div class="country-selector-wrap">
+            <div class="country-btn" id="country-trigger">COUNTRIES</div>
+            <div class="country-dropdown-menu" id="country-menu">
+              <ul class="country-list" id="dropdown-country-list">
+                <!-- Populated via JS -->
+              </ul>
+            </div>
+          </div>
+
+          <div class="header-right-group">
+            <div class="country-selector-wrap">
+              <div class="country-btn" id="color-trigger">COLOUR SELECTOR</div>
+              <div class="color-dropdown-menu" id="color-menu">
+                <div class="color-wheel" id="color-wheel">
+                  <div id="color-all-btn">ALL</div>
+                  <!-- Colors added via JS -->
+                </div>
+                <div id="selected-color-label" style="text-align: center; margin-top: 10px; font-size: 9px; font-family: Helvetica; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em;">SELECT TINT</div>
+              </div>
+            </div>
+
+            <div class="country-selector-wrap">
+              <div class="country-btn" id="popularity-trigger">POPULARITY</div>
+              <div class="country-dropdown-menu" id="popularity-menu">
+                <ul class="country-list" id="dropdown-popularity-list">
+                  <li class="country-item"><a href="#" data-sort="asc">ASCENDING</a></li>
+                  <li class="country-item"><a href="#" data-sort="desc">DESCENDING</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="archive-grid-container" style="width: 100%; max-width: 1200px; padding: 0 40px;">
+      <div class="archive-grid" id="archive-grid"></div>
+    </div>
+    <div style="height: 100px;"></div>
+  </main>
+
+  <div id="archive-modal-overlay">
+    <div id="archive-modal-box">
+      <div class="modal-header">
+        <div class="modal-close-btn" id="modal-close">X</div>
+      </div>
+      <div style="display: flex; flex-grow: 1; min-height: 0;">
+        <div class="modal-left">
+          <div class="asset-container" id="modal-asset-container">
+            <!-- 3D Pack or Static Img -->
+            <div class="pack-wrapper" id="modal-pack-wrapper">
+              <div class="pack-3d" id="modal-pack-3d">
+                <div class="face front"><img src="" id="modal-img-front"></div>
+                <div class="face back"></div>
+                <div class="face left"></div>
+                <div class="face right"></div>
+              </div>
+            </div>
+            <img src="" id="modal-static-img">
+          </div>
+          <div class="modal-asset-controls">
+            <div class="asset-dot active" data-view="3d" title="3D Asset"></div>
+            <div class="asset-dot" data-view="static" title="Static Pack"></div>
+          </div>
+        </div>
+        
+        <div class="modal-right">
+          <div class="modal-metadata-item">
+            <div class="metadata-label">BRAND NAME</div>
+            <div class="metadata-value" id="meta-name"></div>
+          </div>
+          <div class="modal-metadata-item">
+            <div class="metadata-label">YEAR FORMED / EST.</div>
+            <div class="metadata-value" id="meta-year"></div>
+          </div>
+          <div class="modal-metadata-item">
+            <div class="metadata-label">REVIEWS</div>
+            <div class="metadata-value" id="meta-reviews"></div>
+          </div>
+          <div class="modal-metadata-item">
+            <div class="metadata-label">HEALTH WARNING PRESENT</div>
+            <div class="metadata-value" id="meta-warning"></div>
+          </div>
+          <div class="modal-metadata-item">
+            <div class="metadata-label">ORIGIN</div>
+            <div class="metadata-value" id="meta-origin"></div>
+          </div>
+          
+          <div style="margin-top: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+            <div class="metadata-label">REVIEW HIGHLIGHTS</div>
+            <div class="thick-review-box" id="archive-review-display"></div>
+            <div class="review-pagination" id="review-dots-container"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="side-panel">
+    <div style="font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 30px;">Archive Details</div>
+    <div class="synopsis-content" style="font-family: 'Instrument Serif', serif;">
+      <p style="font-size: 17px; line-height: 1.4; margin-bottom: 20px; color: #000;">Browse the complete collection of cigarette brands from around the world. Filter by country or color to explore the archive.</p>
+    </div>
+  </div>
+
+  <script>
+    const brandImages = {
+      "Andorra": { "Elixyr": "andorra - Elixyr.webp", "Gold Coast": "andorra - gold coast .jpg" },
+      "Argentina": {
+        "Red Point": "argentina - red point.JPG", "Lucky Strike": "argentina - lucky strike.JPG",
+        "Philip Morris": "argentina - phillip morris.JPG", "Master": "argentina - master.jpg"
+      },
+      "Armenia": {
+        "Akhtamar": "Armenia - Akhtamar.jpeg", "Ararat": "Armenia - Ararat.png",
+        "Chapman": "Armenia - Chapman.jpeg", "Cigaronne": "Armenia - Cigaronne.png",
+        "Classic": "Armenia - Classic.jpeg", "Noy": "Armenia - Noy.png", "VIP": "Armenia - VIP.png"
+      },
+      "Belarus": { "Korona": "Belarus - Korona.jpeg", "Matrix": "Belarus - Matrix.jpeg", "Minsk": "Belarus - Minsk.jpeg", "NZ": "Belarus - NZ.jpeg" },
+      "Brazil": { "Continental": "Brazil - Continental.jpeg", "Derby": "Brazil - Derby.jpeg", "Hollywood": "Brazil - Hollywood.jpeg", "Minister": "Brazil - Minister.jpeg" },
+      "China": { "Chunghwa": "China - Chunghwa.png", "Double Happiness": "China - Double Happiness.jpeg", "Huanghelou": "China - Huanghelou.jpeg", "Panda": "China - Panda.jpeg", "Zhongnanhai": "China - Zhongnanhai.jpeg" },
+      "Egypt": { "Cleopatra": "Egypt - Cleopatra .png", "Karelia": "Egypt - Karelia.jpeg", "Target": "Egypt - Target.jpeg" },
+      "France": { "Gauloises": "France - Gauloises.jpeg", "Gitanes": "France - Gitanes.jpeg", "L&M": "France - L&M.jpg", "Royale": "France - Royale.jpeg" },
+      "Georgia": { "Astra": "Georgia - Astra.jpeg", "Crown": "Georgia - Crown.jpeg", "Pireveli": "Georgia - Pireveli.jpeg" },
+      "Germany": { "Cabinet": "Germany - Cabinet.png", "Davidoff": "Germany - Davidoff.jpeg", "Westpoint": "Germany - Westpoint.jpeg", "f6": "Germany - f6.jpeg" },
+      "Japan": { "Cabin": "Japan - Cabin.jpeg", "Hope": "Japan - Hope.jpeg", "Mevius": "Japan - Mevius.jpg", "Peace": "Japan - Peace.jpeg", "Pianissimo": "Japan - Pianissimo.jpg", "Seven Stars": "Japan - Seven Stars.jpeg" },
+      "Kuwait": { "Dunhill": "Kuwait - Dunhill.jpeg", "Kent Nano": "Kuwait - Kent Nano.png", "Pall Mall": "Kuwait - Pall Mall.jpeg" },
+      "Lebanon": { "Byblos": "Lebanon - Byblos.jpeg", "Cedars": "Lebanon - Cedars.jpg", "Gitanes": "Lebanon - Gitanes.jpg", "Marlboro": "Lebanon - Marlboro.jpg" },
+      "Russia": { "Belomorkanal": "Russia - Belomorkanal.jpeg", "Java": "Russia - Java.jpeg", "Prima": "Russia - Prima.jpeg", "Senator": "Russia - Senator.jpeg", "Sobranie": "Russia - Sobranie.jpeg", "Troika": "Russia - Troika.jpeg" },
+      "South Korea": { "Bohem": "South Korea - Bohem.jpeg", "Esse": "South Korea - Esse.jpg", "Raison": "South Korea - Raison.jpeg", "The One": "South Korea - The One.jpeg", "This Plus": "South Korea - This Plus.jpeg", "Time": "South Korea - Time.jpeg" },
+      "Spain": { "Celtas": "Spain - Celtas.jpeg", "Ducados": "Spain - Ducados.jpeg", "Fortuna": "Spain - Fortuna.jpeg", "Nobel": "Spain - Nobel.jpeg" },
+      "Turkey": { "Lark": "Turkey - Lark.jpeg", "Maltepe": "Turkey - Maltepe.jpeg", "Samsun": "Turkey - Samsun.jpeg", "Tekel 2000": "Turkey - Tekel 2000.jpeg" },
+      "UAE": { "Business Royal": "UAE - Business Royal.jpeg", "Manchester": "UAE - Manchester.jpeg", "Mond": "UAE - Mond.jpeg", "Pine": "UAE - Pine.jpeg" },
+      "Ukraine": { "Cosmos": "Ukraine - Cosmos.jpeg", "Fest": "Ukraine - Fest.jpeg", "Kent": "Ukraine - Kent.jpeg", "Next": "Ukraine - Next.jpeg", "Pryluky": "Ukraine - Pryluky.jpeg", "Vatra": "Ukraine - Vatra.jpeg" },
+      "United States": { "American Spirit": "United States - American Spirit.jpg", "Nat Sherman": "United States - Nat Sherman.jpeg", "Newport": "United States - Newport.jpg", "Pall Mall": "United States - Pall Mall.png", "Pyramid": "United States - Pyramid.png" },
+      "Vietnam": { "Bastion": "Vietnam - Bastion.jpeg", "Saigon": "Vietnam - Saigon.jpeg", "Thang Long": "Vietnam - Thang Long.jpeg", "Vinataba": "Vietnam - Vinataba.jpeg" }
+    };
+
+    const brandData = {
+      "Andorra": ["Elixyr", "Gold Coast"],
+      "Argentina": ["Red Point", "Lucky Strike", "Philip Morris", "Master"],
+      "Armenia": ["Akhtamar", "Cigaronne", "Noy", "Chapman", "Classic", "Ararat", "VIP"],
+      "Belarus": ["Minsk", "NZ", "Matrix", "Korona"],
+      "Brazil": ["Continental", "Derby", "Hollywood", "Minister"],
+      "China": ["Chunghwa", "Double Happiness", "Panda", "Zhongnanhai", "Huanghelou"],
+      "Egypt": ["Cleopatra", "Karelia", "Target"],
+      "France": ["Gauloises", "Gitanes", "Royale", "L&M"],
+      "Georgia": ["Astra", "Crown", "Pireveli"],
+      "Germany": ["Cabinet", "Davidoff", "Westpoint", "f6"],
+      "Greece": ["Karelia", "Oriental Mist", "Assos", "Camel"],
+      "Hong Kong": ["Viceroy", "Double Happiness", "Golden Leaf"],
+      "Italy": ["MS", "Marlboro", "Alfa"],
+      "Japan": ["Seven Stars", "Peace", "Mevius", "Cabin", "Hope", "Pianissimo"],
+      "Jordan": ["Parliament", "Philadelphia"],
+      "Kazakhstan": ["Kazakhstan", "Koktobe", "Nomad"],
+      "Kuwait": ["Dunhill", "Kent Nano", "Pall Mall"],
+      "Lebanon": ["Byblos", "Cedars", "Gitanes", "Marlboro"],
+      "Mexico": ["Faros", "Delicados", "Alas"],
+      "Moldova": ["Doina", "Temp", "MT"],
+      "Russia": ["Belomorkanal", "Java", "Troika", "Prima", "Sobranie", "Senator"],
+      "Saudi Arabia": ["Shamlan", "Gold Coast"],
+      "South Korea": ["Esse", "The One", "Raison", "Bohem", "This Plus", "Time"],
+      "Spain": ["Fortuna", "Nobel", "Ducados", "Celtas"],
+      "Switzerland": ["Parisienne", "Brunette", "Heimat"],
+      "Taiwan": ["Long Life", "New Paradise"],
+      "Thailand": ["Krong Thip", "Falling Rain", "Gold City"],
+      "Turkey": ["Tekel 2000", "Samsun", "Maltepe", "Lark"],
+      "Ukraine": ["Cosmos", "Fest", "Kent", "Next", "Pryluky", "Vatra"],
+      "UAE": ["Pine", "Manchester", "Mond", "Business Royal"],
+      "United States": ["American Spirit", "Newport", "Pall Mall", "Pyramid", "Nat Sherman"],
+      "UK": ["Benson & Hedges", "Lambert & Butler", "Richmond", "Silk Cut", "Sterling"],
+      "Uzbekistan": ["Marlboro", "Karvon", "Xon"],
+      "Vietnam": ["Vinataba", "Thang Long", "Saigon", "Bastion"]
+    };
+
+    const DATA_VERSION = 'v14-leaflet';
+    let allCarries = [];
+    if (localStorage.getItem('cigaretteCarriesVersion') === DATA_VERSION) {
+      allCarries = JSON.parse(localStorage.getItem('cigaretteCarries')) || [];
+    } else {
+      // Version mismatch or fresh start: will be seeded if needed
+      localStorage.setItem('cigaretteCarriesVersion', DATA_VERSION);
+    }
+
+    const folderMapBase = {
+      "Armenia - Akhtamar": "cigarette pngs 1",
+      "Armenia - Ararat": "cigarette pngs 1",
+      "Armenia - Chapman": "cigarette pngs 1",
+      "Armenia - Cigaronne": "cigarette pngs 1",
+      "Armenia - Classic": "cigarette pngs 1",
+      "Armenia - Noy": "cigarette pngs 1",
+      "Armenia - VIP": "cigarette pngs 1",
+      "Belarus - Korona": "cigarette pngs 1",
+      "Belarus - Matrix": "cigarette pngs 1",
+      "Belarus - Minsk": "cigarette pngs 1",
+      "Belarus - NZ": "cigarette pngs 1",
+      "Brazil - Continental": "cigarette pngs 1",
+      "Brazil - Derby": "cigarette pngs 1",
+      "Brazil - Hollywood": "cigarette pngs 1",
+      "Brazil - Minister": "cigarette pngs 1",
+      "China - Chunghwa": "cigarette pngs 1",
+      "China - Double Happiness": "cigarette pngs 1",
+      "China - Huanghelou": "cigarette pngs 1",
+      "China - Panda": "cigarette pngs 1",
+      "China - Zhongnanhai": "cigarette pngs 1",
+      "Egypt - Cleopatra ": "cigarette pngs 1",
+      "Egypt - Karelia": "cigarette pngs 1",
+      "Egypt - Target": "cigarette pngs 1",
+      "France - Gauloises": "cigarette pngs 1",
+      "France - Gitanes": "cigarette pngs 1",
+      "France - L&M": "cigarette pngs 1",
+      "France - Royale": "cigarette pngs 1",
+      "Georgia - Astra": "cigarette pngs 1",
+      "Georgia - Crown": "cigarette pngs 1",
+      "Georgia - Pireveli": "cigarette pngs 1",
+      "Germany - Cabinet": "cigarette pngs 1",
+      "Germany - Davidoff": "cigarette pngs 1",
+      "Germany - Westpoint": "cigarette pngs 1",
+      "Germany - f6": "cigarette pngs 1",
+      "Greece - Assos": "cigarette pngs 1",
+      "Greece - Camel": "cigarette pngs 1",
+      "Greece - Karelia": "cigarette pngs 1",
+      "Greece - Oriental Mist": "cigarette pngs 1",
+      "Hong Kong - Double Happiness": "cigarette pngs 1",
+      "Hong Kong - Golden Leaf": "cigarette pngs 1",
+      "Hong Kong - Viceroy": "cigarette pngs 1",
+      "Italy - Alfa": "cigarette pngs 1",
+      "Italy - MS": "cigarette pngs 1",
+      "Italy - Marlboro": "cigarette pngs 1",
+      "Japan - Cabin": "cigarette pngs 1",
+      "Japan - Hope": "cigarette pngs 1",
+      "Japan - Mevius": "cigarette pngs 1",
+      "Japan - Peace": "cigarette pngs 1",
+      "Japan - Pianissimo": "cigarette pngs 1",
+      "Japan - Seven Stars": "cigarette pngs 1",
+      "Jordan - Parliament": "cigarette pngs 1",
+      "Jordan - Philadelphia": "cigarette pngs 1",
+      "Kazakhstan - Kazakhstan": "cigarette pngs 1",
+      "Kazakhstan - Koktobe": "cigarette pngs 1",
+      "Kazakhstan - Nomad": "cigarette pngs 1",
+      "Kuwait - Dunhill": "cigarette pngs 1",
+      "Kuwait - Kent Nano": "cigarette pngs 1",
+      "Kuwait - Pall Mall": "cigarette pngs 1",
+      "Lebanon - Byblos": "cigarette pngs 1",
+      "Lebanon - Cedars": "cigarette pngs 1",
+      "Lebanon - Gitanes": "cigarette pngs 1",
+      "Lebanon - Marlboro": "cigarette pngs 1",
+      "Mexico - Alas": "cigarette pngs 1",
+      "Mexico - Delicados": "cigarette pngs 2",
+      "Mexico - Faros": "cigarette pngs 2",
+      "Moldova - Doina": "cigarette pngs 2",
+      "Moldova - MT": "cigarette pngs 2",
+      "Moldova - Temp": "cigarette pngs 2",
+      "Russia - Belomorkanal": "cigarette pngs 2",
+      "Russia - Java": "cigarette pngs 2",
+      "Russia - Prima": "cigarette pngs 2",
+      "Russia - Senator": "cigarette pngs 2",
+      "Russia - Sobranie": "cigarette pngs 2",
+      "Russia - Troika": "cigarette pngs 2",
+      "Saudi Arabia - Gold Coast": "cigarette pngs 2",
+      "Saudi Arabia - Shamlan": "cigarette pngs 2",
+      "South Korea - Bohem": "cigarette pngs 2",
+      "South Korea - Esse": "cigarette pngs 2",
+      "South Korea - Raison": "cigarette pngs 2",
+      "South Korea - The One": "cigarette pngs 2",
+      "South Korea - This Plus": "cigarette pngs 2",
+      "South Korea - Time": "cigarette pngs 2",
+      "Spain - Celtas": "cigarette pngs 2",
+      "Spain - Ducados": "cigarette pngs 2",
+      "Spain - Fortuna": "cigarette pngs 2",
+      "Spain - Nobel": "cigarette pngs 2",
+      "Switzerland - Brunette": "cigarette pngs 2",
+      "Switzerland - Heimat": "cigarette pngs 2",
+      "Switzerland - Parisienne": "cigarette pngs 2",
+      "Taiwan - Long Life": "cigarette pngs 2",
+      "Taiwan - New Paradise": "cigarette pngs 2",
+      "Thailand - Falling Rain": "cigarette pngs 2",
+      "Thailand - Gold City": "cigarette pngs 2",
+      "Thailand - Krong Thip": "cigarette pngs 2",
+      "Turkey - Lark": "cigarette pngs 2",
+      "Turkey - Maltepe": "cigarette pngs 2",
+      "Turkey - Samsun": "cigarette pngs 2",
+      "Turkey - Tekel 2000": "cigarette pngs 2",
+      "UAE - Business Royal": "cigarette pngs 2",
+      "UAE - Manchester": "cigarette pngs 2",
+      "UAE - Mond": "cigarette pngs 2",
+      "UAE - Pine": "cigarette pngs 2",
+      "UK - Benson & Hedges": "cigarette pngs 3",
+      "Ukraine - Cosmos": "cigarette pngs 2",
+      "Ukraine - Fest": "cigarette pngs 2",
+      "Ukraine - Kent": "cigarette pngs 2",
+      "Ukraine - Next": "cigarette pngs 2",
+      "Ukraine - Pryluky": "cigarette pngs 2",
+      "Ukraine - Vatra": "cigarette pngs 2",
+      "United States - American Spirit": "cigarette pngs 2",
+      "United States - Nat Sherman": "cigarette pngs 2",
+      "United States - Newport": "cigarette pngs 2",
+      "United States - Pall Mall": "cigarette pngs 2",
+      "United States - Pyramid": "cigarette pngs 2",
+      "Uzbekistan - Karvon": "cigarette pngs 2",
+      "Uzbekistan - Marlboro": "cigarette pngs 2",
+      "Uzbekistan - Xon": "cigarette pngs 2",
+      "Vietnam - Bastion": "cigarette pngs 2",
+      "Vietnam - Saigon": "cigarette pngs 2",
+      "Vietnam - Thang Long": "cigarette pngs 2",
+      "Vietnam - Vinataba": "cigarette pngs 2",
+      "andorra - Elixyr": "cigarette pngs 2",
+      "andorra - gold coast ": "cigarette pngs 2",
+      "argentina - lucky strike": "cigarette pngs 2",
+      "argentina - master": "cigarette pngs 2",
+      "argentina - phillip morris": "cigarette pngs 2",
+      "argentina - red point": "cigarette pngs 2",
+      "UK - Lambert & Butler": "cigarette pngs 3",
+      "UK - Richmond": "cigarette pngs 3",
+      "UK - Silk Cut": "cigarette pngs 3",
+      "UK - Sterling": "cigarette pngs 3"
+    };
+
+    function getBrandImagePath(country, brand) {
+      let baseName = `${country} - ${brand}`;
+      let filename = `${baseName}.png`;
+      if (brandImages[country] && brandImages[country][brand]) {
+        filename = brandImages[country][brand];
+        baseName = filename.substring(0, filename.lastIndexOf('.'));
+      }
+      const folder = folderMapBase[baseName] || "cigarette pngs 1";
+      return `${folder}/${filename}`;
+    }
+
+    // Reference mapping for filtering based on actual pack designs
+    const brandColorMap = {
+      "red": ["Phillip Morris", "Red Point", "Bastion", "Pall Mall", "Fest", "Next", "Business Royal", "Tekel 2000", "Samsun", "Maltepe", "Nobel", "Ducados", "Senator", "Troika", "Prima", "Cabin", "Westpoint", "L&M", "Chunghwa", "Hollywood", "China:Double Happiness", "Minsk", "Master", "Vatra", "Assos", "Italy:Marlboro", "Uzbekistan:Marlboro", "MS", "Astra", "Philadelphia", "Delicados", "Faros", "MT", "Temp", "Brunette", "New Paradise", "Krong Thip", "Gold City"],
+      "blue": ["Akhtamar", "VIP", "Matrix", "Continental", "Derby", "Minister", "Panda", "Esse", "Bohem", "This Plus", "Time", "Royale", "Zhongnanhai", "Karelia", "Gitanes", "Hope", "Mevius", "Belomorkanal", "Fortuna", "Lark", "Manchester", "Mond", "Cosmos", "Pryluky", "Nat Sherman", "Newport", "Saigon", "Karelia", "Pireveli", "Koktobe", "Nomad", "Doina", "Xon", "Karvon", "Lebanon:Marlboro"],
+      "green": ["f6", "Pine", "Elixyr", "Lucky Strike", "Viceroy", "Alas", "Benson & Hedges", "Lambert & Butler", "Richmond", "Silk Cut", "Sterling"],
+      "grey": ["Ararat", "Cigaronne", "Noy", "NZ", "Seven Stars", "Raison", "The One", "Kent", "Next", "Mond", "Parliament", "Kent Nano", "Cedars"],
+      "pink": ["Pianissimo", "Sobranie"],
+      "yellow": ["Classic", "Korona", "Huanghelou", "Gauloises", "Davidoff", "Peace", "Java", "Celtas", "American Spirit", "Camel", "Pyramid", "Thang Long", "Vinataba", "Oriental Mist", "Golden Leaf", "Hong Kong:Double Happiness", "Crown", "Kazakhstan", "Byblos", "Heimat", "Parisienne", "Long Life"],
+      "brown": ["Chapman", "Cleopatra", "Cabinet", "Gold Coast", "Benson & Hedges", "Lambert & Butler", "Richmond", "Silk Cut"]
+    };
+
+    const archiveGrid = document.getElementById('archive-grid');
+
+    // ── Detail Modal Logic ──
+    const modalOverlay = document.getElementById('archive-modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const assetToggle = document.getElementById('asset-toggle');
+    const modalPack = document.getElementById('modal-pack-wrapper');
+    const modalStatic = document.getElementById('modal-static-img');
+    const modalImgFront = document.getElementById('modal-img-front');
+
+    const metaName = document.getElementById('meta-name');
+    const metaYear = document.getElementById('meta-year');
+    const metaWarning = document.getElementById('meta-warning');
+    const metaOrigin = document.getElementById('meta-origin');
+
+    let isStaticView = false;
+
+    const reviewDisplay = document.getElementById('archive-review-display');
+    const reviewDotsContainer = document.getElementById('review-dots-container');
+    let currentBrandReviews = [];
+
+    function openModal(country, brand) {
+      const imgPath = getBrandImagePath(country, brand);
+      modalImgFront.src = imgPath;
+      modalStatic.src = imgPath;
+      
+      metaName.innerText = brand;
+      metaOrigin.innerText = country;
+      
+      const reviewCount = getReviewCount(country, brand);
+      document.getElementById('meta-reviews').innerText = Math.min(reviewCount, 6);
+      
+      const hash = brand.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      metaYear.innerText = 1910 + (hash % 110);
+      
+      const isNoWarning = ["China", "Japan"].includes(country);
+      metaWarning.innerText = isNoWarning ? "No" : "Yes";
+
+      // Prepare Reviews using Global Map Pool
+      const baseReviews = [
+        "very good", "super strong", "too harsh", "perfect smoke",
+        "surprisingly smooth", "dangerously nice", "can't find these anywhere",
+        "better than expected", "classic", "10/10", "absolutely filthy",
+        "oddly sweet", "one of the best", "never again", "would carry again",
+        "instant favourite", "bit rough", "just ok", "underrated",
+        "iconic packaging", "burns fast", "too good", "smooth as anything",
+        "burns like hell but love it", "very mellow", "strangely addictive",
+        "heavy but nice", "proper cigarette", "genuinely great",
+        "made my eyes water", "unexpectedly light", "harsh but worth it",
+        "not for the faint-hearted", "tastes like home", "so cheap",
+        "worth smuggling", "miss these", "reminds me of someone",
+        "packaging is everything", "perfect with coffee", "my granpa's fave",
+        "my mum's brand", "my ex smoked these", "found these by chance",
+        "bought too many", "won't forget the smell", "totally different here",
+        "took some home", "shared with a stranger", "grabbed at the airport",
+        "got hooked immediately", "headache but worth it", "only available there",
+        "couldn't believe the price", "a bit sickly but nice", "got told off at customs",
+        "best souvenir ever", "tastes like vacation", "my new daily favorite", "hard to find these",
+        "so smooth", "packing is retro", "best with a beer", "sharing with friends", "miss the old packs",
+        "first try today", "never going back", "classic but improved", "my friend's request",
+        "bought for my dad", "great gift", "secret stash"
+      ];
+      const longReviews = [
+        "my ex smoked these every morning, can't smell them without thinking of her",
+        "almost got stopped at the airport but kept them anyway, totally worth it",
+        "my granpa always had a pack on the kitchen table, brings it all back",
+        "found them in a tiny shop down a side street, bought everything they had",
+        "shared the last one with a stranger at 3am, best smoke of my life",
+        "my mum used to smoke these when I was little, strange to hold the pack now",
+        "bought five cartons before my flight, no regrets whatsoever",
+        "smuggled them in my coat lining, customs didn't notice",
+        "tastes completely different from the version they export, so much better",
+        "grabbed them on a whim at a duty free counter and got completely hooked",
+        "some guy I used to have a crush on smoked these, still think of him",
+        "you can't find these outside of there, which makes them special",
+        "had these on my first trip abroad, every puff is a memory",
+        "nearly missed my flight because the cashier was so slow, but these made up for it",
+        "my grandfather used to tell stories about these, finally tried them myself",
+        "the design of the pack is so much better than the ones back home",
+        "found a hidden gem in the back of the airport shop, what a result"
+      ];
+      
+      // Load reviews for this specific brand from the global pool
+      const brandReviews = allCarries.filter(c => c.brand === brand);
+      currentBrandReviews = brandReviews.map(c => c.comment).filter(c => c && c.trim() !== '');
+
+      // Fallback if no reviews exist for this brand in the current pool
+      if (currentBrandReviews.length === 0) {
+        const numFallbacks = getReviewCount(country, brand);
+        for(let i=0; i<numFallbacks; i++) {
+          const isLong = (hash + i) % 5 === 0; 
+          const pool = isLong ? longReviews : baseReviews;
+          currentBrandReviews.push(pool[(hash + i) % pool.length]);
+        }
+      }
+
+      // Max 6 reviews
+      if (currentBrandReviews.length > 6) {
+        currentBrandReviews = currentBrandReviews.slice(0, 6);
+      }
+
+      renderReview(0);
+
+      // Reset to 3D View
+      switchAssetView('3d');
+      modalOverlay.style.display = 'flex';
+      
+      setTimeout(() => {
+        const tryExts = (img) => {
+          const exts = ['.png', '.jpg', '.jpeg', '.JPG', '.webp'];
+          let extIdx = 0;
+          img.onerror = () => {
+            extIdx++;
+            if (extIdx < exts.length) {
+              const nextExt = exts[extIdx];
+              const currentSrc = img.src;
+              const lastDot = currentSrc.lastIndexOf('.');
+              img.src = currentSrc.substring(0, lastDot) + nextExt;
+            } else {
+              img.onerror = null;
+            }
+          };
+        };
+        tryExts(modalImgFront);
+        tryExts(modalStatic);
+        
+        if (modalImgFront.complete) resizePack(modalImgFront);
+        else modalImgFront.onload = () => resizePack(modalImgFront);
+      }, 50);
+    }
+
+    function renderReview(idx) {
+      reviewDisplay.innerText = currentBrandReviews[idx];
+      reviewDotsContainer.innerHTML = '';
+      currentBrandReviews.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = `review-dot ${i === idx ? 'active' : ''}`;
+        dot.addEventListener('click', () => renderReview(i));
+        reviewDotsContainer.appendChild(dot);
+      });
+    }
+
+    modalClose.addEventListener('click', () => modalOverlay.style.display = 'none');
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) modalOverlay.style.display = 'none';
+    });
+
+    // ── Asset View Switching Logic ──
+    const assetDots = document.querySelectorAll('.asset-dot');
+    
+    function switchAssetView(view) {
+      if (view === 'static') {
+        modalPack.style.display = 'none';
+        modalStatic.style.display = 'block';
+      } else {
+        modalPack.style.display = 'block';
+        modalStatic.style.display = 'none';
+      }
+      
+      assetDots.forEach(dot => {
+        dot.classList.toggle('active', dot.getAttribute('data-view') === view);
+      });
+    }
+
+    assetDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        switchAssetView(dot.getAttribute('data-view'));
+      });
+    });
+
+    // ── Dynamic Pack Resizing ──
+    window.resizePack = function (img) {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const ratio = img.naturalHeight / img.naturalWidth;
+      const wrapper = img.closest('.pack-wrapper');
+      if (!wrapper) return;
+      
+      const pack = wrapper.querySelector('.pack-3d');
+      const baseW = 100;
+      const h = baseW * ratio;
+      
+      wrapper.style.width = baseW + 'px';
+      wrapper.style.height = h + 'px';
+      
+      // Update all faces for this specific pack
+      const faces = pack.querySelectorAll('.face');
+      const depth = 20; // Consistent depth
+      
+      faces.forEach(f => {
+        if (f.classList.contains('front')) {
+          f.style.width = baseW + 'px';
+          f.style.height = h + 'px';
+          f.style.transform = `rotateY(0deg) translateZ(${depth/2}px)`;
+        } else if (f.classList.contains('back')) {
+          f.style.width = baseW + 'px';
+          f.style.height = h + 'px';
+          f.style.transform = `rotateY(180deg) translateZ(${depth/2}px)`;
+        } else if (f.classList.contains('left')) {
+          f.style.width = depth + 'px';
+          f.style.height = h + 'px';
+          f.style.transform = `rotateY(-90deg) translateZ(${baseW/2}px)`;
+          f.style.left = (baseW/2 - depth/2) + 'px';
+        } else if (f.classList.contains('right')) {
+          f.style.width = depth + 'px';
+          f.style.height = h + 'px';
+          f.style.transform = `rotateY(90deg) translateZ(${baseW/2}px)`;
+          f.style.left = (baseW/2 - depth/2) + 'px';
+        }
+      });
+      
+      // Call color extraction as well
+      extractPackColor(img);
+    };
+
+    const dropdownCountryList = document.getElementById('dropdown-country-list');
+    const countryTrigger = document.getElementById('country-trigger');
+    const countryMenu = document.getElementById('country-menu');
+    let currentCountry = 'all';
+
+    // Populate dropdown countries
+    const allLi = document.createElement('li');
+    allLi.className = 'country-item';
+    const allA = document.createElement('a');
+    allA.href = '#';
+    allA.setAttribute('data-country', 'all');
+    allA.innerText = 'ALL COUNTRIES';
+    allA.classList.add('active'); // Default active
+    allLi.appendChild(allA);
+    dropdownCountryList.appendChild(allLi);
+
+    Object.keys(brandData).sort().forEach(country => {
+       const li = document.createElement('li');
+       li.className = 'country-item';
+       const a = document.createElement('a');
+       a.href = '#';
+       a.setAttribute('data-country', country);
+       a.innerText = country;
+       li.appendChild(a);
+       dropdownCountryList.appendChild(li);
+    });
+
+    const colorTrigger = document.getElementById('color-trigger');
+    const colorMenu = document.getElementById('color-menu');
+    const colorWheel = document.getElementById('color-wheel');
+    const colorAllBtn = document.getElementById('color-all-btn');
+    const colorLabel = document.getElementById('selected-color-label');
+    
+    let currentColor = 'all';
+
+    const wheelColors = [
+      { name: 'red', hex: '#b01c23' },
+      { name: 'grey', hex: '#888888' },
+      { name: 'green', hex: '#006f62' },
+      { name: 'blue', hex: '#004797' },
+      { name: 'pink', hex: '#ffc0cb' },
+      { name: 'yellow', hex: '#ffd700' },
+      { name: 'brown', hex: '#5d4037' }
+    ];
+
+    // Create Color Wheel
+    wheelColors.forEach((c, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'color-dot';
+      dot.style.backgroundColor = c.hex;
+      dot.setAttribute('data-color', c.name);
+      
+      const angle = (i / wheelColors.length) * (Math.PI * 2);
+      const radius = 55;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      
+      dot.style.left = `calc(50% + ${x}px - 12.5px)`;
+      dot.style.top = `calc(50% + ${y}px - 12.5px)`;
+      
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentColor = c.name;
+        colorLabel.innerText = c.name;
+        colorWheel.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        colorAllBtn.style.borderColor = '#000';
+        dot.classList.add('active');
+        renderArchive();
+      });
+      colorWheel.appendChild(dot);
+    });
+
+    colorAllBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentColor = 'all';
+      colorLabel.innerText = 'SELECT TINT';
+      colorWheel.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+      colorAllBtn.style.borderColor = '#e8600a';
+      renderArchive();
+    });
+
+    colorTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      colorMenu.classList.toggle('open');
+      countryMenu.classList.remove('open');
+    });
+
+    countryTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      countryMenu.classList.toggle('open');
+      colorMenu.classList.remove('open');
+    });
+
+    const popularityMenu = document.getElementById('popularity-menu');
+    const popularityTrigger = document.getElementById('popularity-trigger');
+
+    document.addEventListener('click', (e) => {
+      if (!countryMenu.contains(e.target) && e.target !== countryTrigger) {
+        countryMenu.classList.remove('open');
+      }
+      if (!colorMenu.contains(e.target) && e.target !== colorTrigger) {
+        colorMenu.classList.remove('open');
+      }
+      if (popularityMenu && !popularityMenu.contains(e.target) && e.target !== popularityTrigger) {
+        popularityMenu.classList.remove('open');
+      }
+    });
+
+    function getReviewCount(country, brand) {
+      // Check if we have real data loaded
+      if (allCarries && allCarries.length > 0) {
+        const count = allCarries.filter(c => c.brand === brand).length;
+        if (count > 0) return count;
+      }
+      // Fallback for UI if no dots are seeded yet or for this brand
+      const hash = (country + brand).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return (hash % 35) + 1;
+    }
+
+    let sortOrder = 'none';
+    const dropdownPopularityList = document.getElementById('dropdown-popularity-list');
+    
+    popularityTrigger.addEventListener('click', () => {
+      popularityMenu.classList.toggle('open');
+    });
+
+    dropdownPopularityList.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        sortOrder = e.target.getAttribute('data-sort');
+        
+        dropdownPopularityList.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        popularityMenu.classList.remove('open');
+        renderArchive();
+      }
+    });
+
+    function renderArchive() {
+      const filterCountry = currentCountry;
+      const filterColor = currentColor;
+      
+      archiveGrid.innerHTML = '';
+      let allItems = [];
+
+      Object.entries(brandData).forEach(([country, brands]) => {
+        brands.forEach(brand => {
+          // Country Filter
+          if (filterCountry !== 'all' && country !== filterCountry) return;
+          
+          // Colour Filter
+          if (filterColor !== 'all') {
+            const compositeKey = `${country}:${brand}`;
+            const matchesColor = (brandColorMap[filterColor] && (
+              brandColorMap[filterColor].includes(brand) || 
+              brandColorMap[filterColor].includes(compositeKey)
+            ));
+            if (!matchesColor) return;
+          }
+
+          allItems.push({ country, brand, reviewCount: getReviewCount(country, brand) });
+        });
+      });
+
+      // Sort
+      if (sortOrder === 'asc') {
+        allItems.sort((a, b) => {
+          if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
+          return a.brand.localeCompare(b.brand);
+        });
+      } else if (sortOrder === 'desc') {
+        allItems.sort((a, b) => {
+          if (b.reviewCount !== a.reviewCount) return a.reviewCount - b.reviewCount;
+          return a.brand.localeCompare(b.brand);
+        });
+      } else {
+        allItems.sort((a, b) => a.brand.localeCompare(b.brand));
+      }
+
+      allItems.forEach(({ country, brand, reviewCount }) => {
+        const imgPath = getBrandImagePath(country, brand);
+        const item = document.createElement('div');
+        item.className = 'archive-item';
+        item.addEventListener('click', () => openModal(country, brand));
+        item.innerHTML = `
+          <div class="pack-wrapper">
+            <div class="pack-3d">
+              <div class="face front">
+                <img src="${imgPath}" 
+                  onload="window.resizePack(this)" 
+                  onerror="const exts=['.png','.jpg','.jpeg','.JPG','.webp']; const currentExt=exts.find(e=>this.src.endsWith(e)) || '.png'; const nextExt=exts[exts.indexOf(currentExt)+1]; if(nextExt){ this.src=this.src.replace(currentExt, nextExt); } else { this.remove(); }">
+              </div>
+              <div class="face back"></div>
+              <div class="face left"></div>
+              <div class="face right"></div>
+            </div>
+          </div>
+          <div class="archive-item-details">
+            <div class="archive-item-name">${brand}</div>
+            <div class="archive-item-country">${country}</div>
+            <div class="archive-item-reviews">Reviews: ${reviewCount}</div>
+          </div>
+        `;
+        archiveGrid.appendChild(item);
+      });
+    }
+
+    dropdownCountryList.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        currentCountry = e.target.getAttribute('data-country');
+        
+        dropdownCountryList.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        renderArchive();
+        countryMenu.classList.remove('open');
+      }
+    });
+
+    // ── More Accurate Pack Color Extraction ──
+    window.extractPackColor = function (img) {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 10; canvas.height = 10;
+        
+        // Sample from the central portion of the image to avoid borders/shadows
+        const sampleW = img.naturalWidth * 0.4;
+        const sampleH = img.naturalHeight * 0.4;
+        const sampleX = img.naturalWidth * 0.3;
+        const sampleY = img.naturalHeight * 0.3;
+        
+        ctx.drawImage(img, sampleX, sampleY, sampleW, sampleH, 0, 0, 10, 10);
+        const data = ctx.getImageData(0, 0, 10, 10).data;
+        
+        let r = 0, g = 0, b = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          r += data[i];
+          g += data[i+1];
+          b += data[i+2];
+        }
+        r = Math.round(r / (data.length / 4));
+        g = Math.round(g / (data.length / 4));
+        b = Math.round(b / (data.length / 4));
+        
+        // If color is too dark and we know it should be lighter, fallback 
+        // (But usually sampling center fixes it)
+        const color = `rgb(${r}, ${g}, ${b})`;
+        const pack = img.closest('.pack-3d');
+        if (pack) {
+          pack.querySelectorAll('.face:not(.front)').forEach(face => face.style.backgroundColor = color);
+        }
+      } catch (e) {}
+    };
+
+    renderArchive();
+
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidePanel = document.getElementById('side-panel');
+    const overlay = document.getElementById('overlay');
+
+    hamburgerBtn.addEventListener('click', () => {
+      sidePanel.classList.toggle('open');
+      overlay.classList.toggle('visible');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidePanel.classList.remove('open');
+      overlay.classList.remove('visible');
+    });
+  </script>
+</body>
+
+</html>
