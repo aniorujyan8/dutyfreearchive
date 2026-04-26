@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duty-Free - Publication</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+    body { background-color: #ffffff; font-family: Helvetica, Arial, sans-serif; min-height: 100vh; cursor: none; overflow-x: hidden; }
+    
+    #cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, white 0%, white 40%, rgba(255,255,255,0.4) 60%, transparent 80%);
+      mix-blend-mode: difference;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 99999;
+    }
+
+    header { 
+      width: 100%; 
+      height: 40px; 
+      background-color: #ffffff; 
+      border-bottom: 0.5px solid #000; 
+      display: flex; 
+      align-items: stretch; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      z-index: 10001; 
+    }
+
+    .header-left { 
+      display: flex; 
+      align-items: center; 
+      padding: 0 16px; 
+      border-right: 0.5px solid #000; 
+      cursor: none !important; 
+      transition: background-color 0.2s ease; 
+    }
+    .header-left:hover { background-color: #f2bda0; }
+    .hamburger { width: 18px; height: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    .hamburger span { display: block; width: 100%; height: 0.5px; background-color: #000; }
+    .header-center { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+    .nav-logo { height: 36px; }
+
+    #side-panel { 
+      position: fixed; 
+      top: 40px; 
+      left: -224px; 
+      width: 224px; 
+      height: 100vh; 
+      background-color: #ffffff; 
+      border-right: 0.5px solid #000; 
+      z-index: 10000; 
+      transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+      padding: 40px 20px; 
+      overflow-y: auto; 
+    }
+    #side-panel.open { left: 0; }
+    #overlay { position: fixed; top: 40px; left: 0; width: 100%; height: calc(100vh - 40px); background-color: rgba(0,0,0,0.4); z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+    #overlay.visible { opacity: 1; pointer-events: auto; }
+
+    nav { width: 100%; height: 30px; background-color: #ffffff; border-top: 0.5px solid #000; display: flex; align-items: stretch; position: fixed; bottom: 0; left: 0; z-index: 10001; }
+    .nav-left { display: flex; align-items: stretch; border-right: 0.5px solid #000; }
+    .nav-right { margin-left: auto; display: flex; align-items: stretch; }
+    .nav-left a, .nav-right a { display: flex; align-items: center; padding: 0 16px; text-decoration: none; color: #000; font-family: Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; transition: background-color 0.2s ease; }
+    .nav-right a { border-left: 0.5px solid #000; }
+    .nav-left a:hover, .nav-right a:hover, .nav-left a.active, .nav-right a.active { background-color: #f2bda0; }
+
+    main {
+      position: absolute;
+      top: 65px;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: row;
+    }
+
+    /* Ticker Styling */
+    .ticker-section {
+      width: 100%;
+      height: 25px;
+      background-color: #ffffff;
+      border-bottom: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 6001;
+      position: fixed;
+      top: 40px;
+      left: 0;
+    }
+    .ticker-wrapper {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: ticker 60s linear infinite;
+    }
+    .ticker-item {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-dot {
+      width: 5px;
+      height: 5px;
+      margin: 0 8px;
+      background: #000;
+      border-radius: 50%;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .pub-content {
+      width: 50%;
+      height: 100%;
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .pub-visual {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pub-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-transform: none; /* Normal capitalized */
+    }
+
+    .pub-description {
+      font-family: Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #999;
+      text-align: justify;
+      width: 100%;
+    }
+
+    .pub-subcategories {
+      margin-top: 30px;
+      font-family: Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      display: flex;
+      gap: 60px;
+    }
+
+    .sub-label {
+      font-family: 'Instrument Serif', serif;
+      font-size: 18px;
+      color: #000;
+      display: inline-block;
+      width: 140px;
+    }
+
+    .sub-value {
+      color: #999;
+    }
+
+    /* 3D Pack Styling (Large) */
+    .pack-wrapper {
+      perspective: 1000px;
+      width: 200px;
+      height: 320px;
+    }
+    .pack-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      /* Animation removed for interactive drag */
+    }
+    .drag-instruction {
+      font-family: Helvetica, sans-serif;
+      font-size: 10px;
+      color: #999;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 50px;
+      text-align: center;
+    }
+    .face {
+      position: absolute;
+      background: #ffffff; /* Default white background */
+      border: 0.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .face.front {
+      background: #ffffff;
+    }
+    .face img { 
+      width: 100%; 
+      height: 100%; 
+      -webkit-user-drag: none; 
+      user-select: none; 
+      pointer-events: none;
+    }
+
+    /* Flip-Top Lid Flap Lines */
+    .face.left::after {
+      content: '';
+      position: absolute;
+      top: calc(30% - 1px);
+      left: -5%;
+      width: 110%;
+      height: 0.5px;
+      background-color: #000;
+      transform: rotate(12deg);
+      transform-origin: left top;
+      z-index: 10;
+    }
+    .face.right::after {
+      content: '';
+      position: absolute;
+      top: calc(30% - 1px);
+      right: -5%;
+      width: 110%;
+      height: 0.5px;
+      background-color: #000;
+      transform: rotate(-12deg);
+      transform-origin: right top;
+      z-index: 10;
+    }
+    .face.back::after {
+      content: '';
+      position: absolute;
+      top: calc(30% - 1px);
+      left: 0;
+      width: 100%;
+      height: 0.5px;
+      background-color: #000;
+      z-index: 10;
+    }
+    
+    @keyframes spin-y {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+
+  <header>
+    <div class="header-left" id="hamburger-btn">
+      <div class="hamburger"><span></span><span></span><span></span></div>
+    </div>
+    <div class="header-center"><img src="duty_free_logo.png" class="nav-logo" alt="Logo"></div>
+    <div style="width: 50.5px;"></div>
+  </header>
+
+  <div id="side-panel">
+    <div style="font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 30px;">Information</div>
+    <p style="font-family: 'Instrument Serif', serif; font-size: 17px; line-height: 1.4; color: #000;">Duty-Free is a localized cigarette archive documenting the global transport of brands through submissions.</p>
+  </div>
+  <div id="overlay"></div>
+
+  <div class="ticker-section">
+    <div class="ticker-wrapper">
+      <div class="ticker-item">COMING SOON</div><div class="ticker-dot"></div>
+      <div class="ticker-item">BIENTÔT DISPONIBLE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">PRÓXIMAMENTE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">DEMNÄCHST</div><div class="ticker-dot"></div>
+      <div class="ticker-item">출시 예정</div><div class="ticker-dot"></div>
+      <div class="ticker-item">PROSSIMAMENTE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">СКОРО В ПРОДАЖЕ</div><div class="ticker-dot"></div>
+      <div class="ticker-item">EM BREVE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">BINNENKORT</div><div class="ticker-dot"></div>
+      <div class="ticker-item">ΣΥΝΤΟΜΑ</div><div class="ticker-dot"></div>
+      <div class="ticker-item">YAKINDA</div><div class="ticker-dot"></div>
+      <div class="ticker-item">KOMMER SNART</div><div class="ticker-dot"></div>
+      <!-- Duplicate -->
+      <div class="ticker-item">COMING SOON</div><div class="ticker-dot"></div>
+      <div class="ticker-item">BIENTÔT DISPONIBLE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">PRÓXIMAMENTE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">DEMNÄCHST</div><div class="ticker-dot"></div>
+      <div class="ticker-item">출시 예정</div><div class="ticker-dot"></div>
+      <div class="ticker-item">PROSSIMAMENTE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">СКОРО В ПРОДАЖЕ</div><div class="ticker-dot"></div>
+      <div class="ticker-item">EM BREVE</div><div class="ticker-dot"></div>
+      <div class="ticker-item">BINNENKORT</div><div class="ticker-dot"></div>
+      <div class="ticker-item">ΣΥΝΤΟΜΑ</div><div class="ticker-dot"></div>
+      <div class="ticker-item">YAKINDA</div><div class="ticker-dot"></div>
+      <div class="ticker-item">KOMMER SNART</div><div class="ticker-dot"></div>
+    </div>
+  </div>
+
+  <div class="central-divider"></div>
+
+  <main>
+    <div class="pub-content">
+      <h1 class="pub-title">Publication</h1>
+      <p class="pub-description">A portable collection of our archive that is designed to be filled with your input and opinions. Can't get online? Have no access to your phone or laptop? Or just want something more physical and tangible? Our publication provides the names, you provide the details. <i>*This collection is limited based on our exisiting archive and does not claim to include all cigarette packs/ brands.*</i> Available to order soon.</p>
+      
+      <div class="pub-subcategories">
+        <div class="sub-col">
+          <div><span class="sub-label">Dimensions:</span> <span class="sub-value">88 x 56 x 22 mm</span></div>
+          <div><span class="sub-label">Release Date:</span> <span class="sub-value">1st May 2026</span></div>
+          <div><span class="sub-label">Languages:</span> <span class="sub-value">English</span></div>
+        </div>
+        <div class="sub-col">
+          <div><span class="sub-label">Published in:</span> <span class="sub-value">Manchester, UK</span></div>
+          <div><span class="sub-label">Number of Pages:</span> <span class="sub-value">55</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pub-visual">
+      <div class="pack-wrapper">
+        <div class="pack-3d">
+          <div class="face front">
+            <img src="cigarette_box_01.png" id="main-pack-img" onload="window.resizePack(this)">
+          </div>
+          <div class="face back">
+            <img src="cigarette_box_13.png">
+          </div>
+          <div class="face left">
+            <img src="cigarette_box_14.png">
+          </div>
+          <div class="face right">
+            <img src="cigarette_box_15.png">
+          </div>
+          <div class="face top"></div>
+          <div class="face bottom">
+            <img src="cigarette_box_16.png">
+          </div>
+        </div>
+      </div>
+      <div class="drag-instruction">Drag to rotate</div>
+    </div>
+  </main>
+
+  <nav>
+    <div class="nav-left"><a href="index.html">Home</a></div>
+    <div class="nav-right">
+      <a href="map.html">Map</a>
+      <a href="archive.html">Archive</a>
+      <a href="publication.html" class="active">Publication</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (e) => { 
+      cursor.style.left = e.clientX + 'px'; 
+      cursor.style.top = e.clientY + 'px'; 
+    });
+
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidePanel = document.getElementById('side-panel');
+    const overlay = document.getElementById('overlay');
+
+    hamburgerBtn.addEventListener('click', () => {
+      sidePanel.classList.toggle('open'); overlay.classList.toggle('visible');
+    });
+
+    overlay.addEventListener('click', () => { 
+      sidePanel.classList.remove('open'); overlay.classList.remove('visible'); 
+    });
+
+    window.resizePack = function(img) {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const ratio = img.naturalHeight / img.naturalWidth;
+      const wrapper = img.closest('.pack-wrapper');
+      const pack = wrapper.querySelector('.pack-3d');
+      const baseW = 220; // Slightly bigger size for publication
+      const h = baseW * ratio;
+      wrapper.style.width = baseW + 'px';
+      wrapper.style.height = h + 'px';
+      
+      // Dynamically warp the box depth to fit the side image perfectly
+      const sideImg = pack.querySelector('.face.left img');
+      let depth = 57; // Fallback depth
+      if (sideImg && sideImg.naturalWidth) {
+        depth = h * (sideImg.naturalWidth / sideImg.naturalHeight);
+      } else if (sideImg) {
+        sideImg.addEventListener('load', () => window.resizePack(img), { once: true });
+      }
+
+      const faces = pack.querySelectorAll('.face');
+      faces.forEach(f => {
+        if (f.classList.contains('front')) {
+          f.style.width = baseW + 'px'; f.style.height = h + 'px';
+          f.style.transform = `rotateY(0deg) translateZ(${depth/2}px)`;
+          f.style.top = '0px'; f.style.left = '0px';
+        } else if (f.classList.contains('back')) {
+          f.style.width = baseW + 'px'; f.style.height = h + 'px';
+          f.style.transform = `rotateY(180deg) translateZ(${depth/2}px)`;
+          f.style.top = '0px'; f.style.left = '0px';
+        } else if (f.classList.contains('left')) {
+          f.style.width = depth + 'px'; f.style.height = h + 'px';
+          f.style.transform = `rotateY(-90deg) translateZ(${baseW/2}px)`;
+          f.style.left = (baseW/2 - depth/2) + 'px';
+          f.style.top = '0px';
+        } else if (f.classList.contains('right')) {
+          f.style.width = depth + 'px'; f.style.height = h + 'px';
+          f.style.transform = `rotateY(90deg) translateZ(${baseW/2}px)`;
+          f.style.left = (baseW/2 - depth/2) + 'px';
+          f.style.top = '0px';
+        } else if (f.classList.contains('top')) {
+          f.style.width = baseW + 'px'; f.style.height = depth + 'px';
+          f.style.transform = `rotateX(90deg) translateZ(${h/2}px)`;
+          f.style.top = (h/2 - depth/2) + 'px';
+          f.style.left = '0px';
+        } else if (f.classList.contains('bottom')) {
+          f.style.width = baseW + 'px'; f.style.height = depth + 'px';
+          f.style.transform = `rotateX(-90deg) translateZ(${h/2}px)`;
+          f.style.top = (h/2 - depth/2) + 'px';
+          f.style.left = '0px';
+        }
+      });
+    };
+
+    // Ensure resizePack runs even if the image is loaded from browser cache
+    const mainImg = document.getElementById('main-pack-img');
+    if (mainImg && mainImg.complete) {
+      window.resizePack(mainImg);
+    }
+
+    // Interactive Drag & Auto-Spin Logic
+    const pack3d = document.querySelector('.pack-3d');
+    const packWrapper = document.querySelector('.pack-wrapper');
+    let isDragging = false;
+    let prevX = 0, prevY = 0;
+    let rotX = -10, rotY = -30;
+    
+    // Smooth rendering loop
+    function renderLoop() {
+      if (!isDragging) {
+        rotY += 0.5; // Auto-spin speed
+        // Smoothly return the vertical tilt back to normal when let go
+        rotX += (-10 - rotX) * 0.05;
+      }
+      pack3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+      requestAnimationFrame(renderLoop);
+    }
+    // Start the animation loop
+    renderLoop();
+
+    packWrapper.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - prevX;
+      const deltaY = e.clientY - prevY;
+      
+      rotY += deltaX * 0.8;
+      rotX -= deltaY * 0.8;
+      
+      rotX = Math.max(-80, Math.min(80, rotX));
+      
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  </script>
+</body>
+</html>
